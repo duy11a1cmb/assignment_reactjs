@@ -1,17 +1,19 @@
-import React from 'react';
-import './App.css';
-import {BrowserRouter} from "react-router-dom";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React from "react";
+import "./App.css";
+import { BrowserRouter } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
 import AppRouters from "./router/AppRouter";
-import Header from "./components/header/Header";
-import Footer from "./components/footer/Footer";
+import { Provider } from "react-redux";
+import store from "./redux/store";
 
 function App() {
-    return (
-        <BrowserRouter>
-            <AppRouters/>
-        </BrowserRouter>
-    );
+  return (
+    <BrowserRouter>
+      <Provider store={store}>
+        <AppRouters />
+      </Provider>
+    </BrowserRouter>
+  );
 }
 
 export default App;

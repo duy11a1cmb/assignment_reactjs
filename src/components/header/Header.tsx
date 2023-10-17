@@ -14,9 +14,9 @@ const Header = ()=>{
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              <Link to={ROUTE_PATH.home} className='nav-link'>Home</Link>
-              <Link to={ROUTE_PATH.demo_1} className='nav-link'>Demo 1</Link>
-              <Link to={ROUTE_PATH.demo_2} className='nav-link'>Demo 2</Link>
+              <Nav.Link href={ROUTE_PATH.home} className='nav-link'>Home</Nav.Link>
+              <Nav.Link href={ROUTE_PATH.demo_1} className='nav-link'>Demo 1</Nav.Link>
+              <Nav.Link href={ROUTE_PATH.demo_2} className='nav-link'>Demo 2</Nav.Link>
               <NavDropdown title="Dropdown" id="basic-nav-dropdown">
                 <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
                 <NavDropdown.Item href="#action/3.2">
