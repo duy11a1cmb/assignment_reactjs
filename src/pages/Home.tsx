@@ -1,22 +1,29 @@
-import React, { useEffect } from "react";
-import usePopup from "../hooks/usePopup";
+import React from "react";
+import {Link, Outlet} from "react-router-dom";
+import {Nav} from "react-bootstrap";
+import {ROUTE_PATH} from "../constants/appConstants";
+import Layout from "../components/layout/Layout";
 
 const Home = () => {
-  const popup = usePopup();
+    return (
+        <Layout>
+            <div className='d-flex flex-row row'>
+                <div className='col-2'>
+                    <Nav defaultActiveKey="/home" className="flex-column">
+                        <Link to={ROUTE_PATH.home_list} className='nav-link'>List</Link>
+                        <Link to={ROUTE_PATH.home_list_1} className='nav-link'>List 1</Link>
+                        <Nav.Link eventKey="disabled" disabled>
+                            Disabled
+                        </Nav.Link>
+                    </Nav>
+                </div>
+                <div className='col-10'>
+                    <Outlet/>
+                </div>
+            </div>
+        </Layout>
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleClick = () => {
-    popup.show("Test popup");
-  };
-
-  return (
-    <div className="center" style={{ height: "70vh" }}>
-      <button onClick={handleClick}>Click</button>
-    </div>
-  );
+    );
 };
 
 export default Home;

@@ -1,25 +1,17 @@
-import { BrowserRouter as Router } from "react-router-dom";
-import ContextProviderLayout from "./contexts/ContextProvider";
-import "antd/dist/antd.min.css";
-import PopupConfirm from "./components/popup/PopupConfirm";
-import { ErrorBoundary } from "./components/bundary/ErrorBundary";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import AppRouters from "./config/appRouter";
-import './baseStyle.scss'
+import React from 'react';
+import './App.css';
+import {BrowserRouter} from "react-router-dom";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import AppRouters from "./router/AppRouter";
+import Header from "./components/header/Header";
+import Footer from "./components/footer/Footer";
 
 function App() {
-  return (
-    <ContextProviderLayout>
-      <ErrorBoundary>
-        <ToastContainer />
-        <PopupConfirm />
-        <Router>
-          <AppRouters />
-        </Router>
-      </ErrorBoundary>
-    </ContextProviderLayout>
-  );
+    return (
+        <BrowserRouter>
+            <AppRouters/>
+        </BrowserRouter>
+    );
 }
 
 export default App;
