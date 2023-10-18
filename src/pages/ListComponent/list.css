@@ -1,0 +1,13 @@
+.list-user-name:hover {
+    cursor: pointer;
+}
+
+.list-user-name:hover > .col-user-name {
+    text-decoration: underline;
+}
+
+.header-table-list {
+    position: sticky;
+    top: 0;
+    z-index: 99;
+}

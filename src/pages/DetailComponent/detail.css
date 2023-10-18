@@ -1,0 +1,21 @@
+
+.bg-box-detail {
+    background-color: #e2e8f073;
+    border-radius: 15px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+}
+.custom-list-group{
+    width: 100%;
+    justify-content: center;
+}
+.custom-list-group .list-group-item{
+    height: 55px;
+    display: flex;
+    align-items: center;
+}
+.bg-box-detail-abouts{
+    display: block;
+}
