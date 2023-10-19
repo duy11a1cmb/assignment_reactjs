@@ -7,49 +7,84 @@ import {useNavigate} from "react-router-dom";
 import {ROUTE_PATH} from "../../constants/appConstants";
 import Form from 'react-bootstrap/Form';
 
+interface Filter {
+    query: string,
+    role: string
+}
+
 const ListComponent = () => {
     const navigate = useNavigate()
     const [listUser, setListUser] = useState<any[]>([]);
     const [listUserPass, setListUserPass] = useState<any[]>([]);
+    const [listSearchQuery, setListSearchQuery] = useState<any[]>([])
+    const [listSearchRole, setListSearchRole] = useState<any[]>([])
+    const [filter, setFilter] = useState<Filter>({
+        query: '',
+        role: ''
+    })
+
     useEffect(() => {
         userServices.getListUser().then((res: any) => {
             if (res) {
                 setListUser(res)
-                setListUserPass(res)
+                setListSearchQuery(res)
+
             } else {
-                console.log('get list user failed')
             }
         })
     }, [])
 
-    const handleSearch = (event: any) => {
+    const onChangeQuery = (event: any) => {
         const val = event.target.value.trim().toLocaleUpperCase()
-        setListUserPass([])
-        if(val.trim() === ''){
-            setListUserPass(listUser)
-        }else{
+        setFilter({...filter, query: val})
+        handleSearch(val)
+
+    }
+
+    const handleSearch = (val:string) => {
+        setListSearchQuery([])
+        if (val.trim() === '') {
+            setListSearchQuery(listUser)
+        } else {
             listUser.forEach((item: any, index) => {
                 for (const itemKey in item) {
-                    console.log(                    itemKey
-                    )
-                    if(item[itemKey] === 'roles'){
-                        console.log('123')
-                        item[itemKey].includes(val)
-                        setListUserPass((prev)=>([...prev, item]));
-                        break;
-                    }
-                    if(typeof item[itemKey] === 'string' && itemKey !=='password' && itemKey !== 'abouts'){
+                    if (typeof item[itemKey] === 'string' && itemKey !== 'password' && itemKey !== 'abouts') {
                         if (item[itemKey].toLocaleUpperCase().includes(val)) {
-                            setListUserPass((prev)=>([...prev, item]));
+                            setListSearchQuery((prev: any) => ([...prev, item]));
                             break;
                         }
                     }
 
                 }
-
             })
         }
     }
+
+
+    const handleSelectRole = (val:string) => {
+        setListSearchRole([])
+
+        // listUser.forEach((item: any) => {
+        //     if (item.roles.includes(filter.role)) {
+        //         setListSearchRole((prev: any) => ([...prev, item]));
+        //     }
+        // })
+    }
+
+    const compareValSearch = () => {
+        setListUserPass([])
+        const isSameUser = (a: any, b: any) => a.id === b.id && a.id === b.id;
+        const onlyInLeft = (left: any[], right: any[], compareFunction: any) =>
+            left.filter(leftValue =>
+                right.some(rightValue =>
+                    compareFunction(leftValue, rightValue)));
+        const onlyInA = onlyInLeft(listSearchQuery, listSearchRole, isSameUser);
+        const onlyInB = onlyInLeft(listSearchRole, listSearchQuery, isSameUser);
+
+        const result = [...onlyInA, ...onlyInB];
+        setListUserPass(result)
+    }
+
 
     const ListUser = (data: any) => {
 
@@ -67,7 +102,7 @@ const ListComponent = () => {
         }
 
         const handleRedirectDetail = (id: number) => {
-            navigate("/" + ROUTE_PATH.home + "/" + ROUTE_PATH.detail + `/${id}`)
+            navigate("/" + ROUTE_PATH.detail + `/${id}`)
         }
 
 
@@ -123,16 +158,36 @@ const ListComponent = () => {
         )
     }
 
+    const onChangeSelectRoles = (event: any) => {
+        setFilter({...filter, role: event.target.value})
+        handleSelectRole(event.target.value)
+    }
+
+    useEffect(() => {
+        handleSelectRole(filter.role)
+        handleSearch(filter.query)
+        compareValSearch()
+
+    }, [filter])
+
     return (
         <div className='pt-3'>
-            <div className='w-25 pb-3'>
+            <div className='w-100 pb-3 d-flex justify-content-between'>
                 <Form.Control
+                    className='w-50'
                     type="text"
-                    placeholder='Search somethings...'
-                    onChange={handleSearch}
+                    placeholder='Search somethings without roles...'
+                    onChange={onChangeQuery}
                 />
+                <Form.Select aria-label="Default select example" className='w-25' onChange={onChangeSelectRoles}
+                             value={filter.role}>
+                    <option value="all">All Roles</option>
+                    <option value="admin">Admin</option>
+                    <option value="manager">Manager</option>
+                    <option value="staff">Staff</option>
+                </Form.Select>
             </div>
-            <ListUser data={listUserPass}/>
+            <ListUser data={listSearchQuery}/>
         </div>
     )
 }

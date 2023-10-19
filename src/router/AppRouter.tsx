@@ -19,14 +19,15 @@ const AppRouters = () => {
             <Route path={ROUTE_PATH.login} element={<Login/>}/>
             <Route element={<PrivateRoute/>}>
                 <Route path={ROUTE_PATH.home} element={<Home/>}>
-                    <Route path={ROUTE_PATH.home_list} element={<ListComponent/>}/>
-                    <Route path={ROUTE_PATH.home_list_1} element={<ListComponent1/>}/>
-                    <Route path={ROUTE_PATH.detail+"/:id"} element={<DetailComponent/>}/>
+                    {/*<Route path={ROUTE_PATH.home_list} element={<ListComponent/>}/>*/}
+                    {/*<Route path={ROUTE_PATH.home_list_1} element={<ListComponent1/>}/>*/}
                 </Route>
+                <Route path={ROUTE_PATH.detail+"/:id"} element={<DetailComponent/>}/>
+
                 <Route path={ROUTE_PATH.demo_1} element={<Demo1/>}/>
                 <Route path={ROUTE_PATH.demo_2} element={<Demo2/>}/>
             </Route>
-            {/*<Route path='*' index element={<Navigate to={ROUTE_PATH.home} replace/>}/>*/}
+            <Route path='*' index element={<Navigate to={ROUTE_PATH.home} replace/>}/>
         </Routes>
     );
 };

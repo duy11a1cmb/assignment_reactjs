@@ -7,7 +7,7 @@ const rootReducer = combineReducers({
 });
 
 const store = configureStore({
-  reducer: rootReducer,
+  reducer: rootReducer || {},
   middleware: getDefaultMiddleware => getDefaultMiddleware().concat(thunk),
 });
 

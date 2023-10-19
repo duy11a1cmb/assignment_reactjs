@@ -8,6 +8,6 @@
 
 .header-table-list {
     position: sticky;
-    top: 0;
+    top: 56px;
     z-index: 99;
 }
