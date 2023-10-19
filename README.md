@@ -3,8 +3,14 @@
 This project is a Login - List - Detail mock application with user authentication just FE
 
 ## DEMO
-...
+https://assignment-reactjs-smoky.vercel.app/login
 
+Account for login:
+
+```
+email: Sincere@april.biz
+password: 123
+```
 ## Tech
 
 - React
