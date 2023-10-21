@@ -1,182 +1,255 @@
-import React, {useEffect, useState} from "react";
-import {getListUser} from "../../services/userServices";
-import Table from 'react-bootstrap/Table';
-import './list.css'
-import Button from 'react-bootstrap/Button';
-import {useNavigate} from "react-router-dom";
-import {ROUTE_PATH} from "../../constants/appConstants";
-import Form from 'react-bootstrap/Form';
-import {DetailUser, FilterTable} from "../../models/userModel";
-import {useDispatch, useSelector} from "react-redux";
-import {setQueryFilterPages, setSortFilterPages} from "../../redux/slices/filterSlices";
+import React, { useEffect, useState } from "react";
+import { getListUser } from "../../services/userServices";
 
-
-interface IMyProps {
-    data: DetailUser[]
-}
+import "./list.css";
+import Form from "react-bootstrap/Form";
+import { DetailUser, FilterTable } from "../../models/userModel";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setCurrentFilterPages,
+  setQueryFilterPages,
+  setSortFilterPages,
+  setTotalFilterPages,
+  setNumberPerPageslFilterPages,
+} from "../../redux/slices/filterSlices";
+import Pagination from "react-bootstrap/Pagination";
+import ListUser from "./ListUser";
+import { Container } from "react-bootstrap";
 
 const ListComponent = () => {
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
-    const filter: FilterTable = useSelector((state: any) => state?.filterPages)
-    const [listUser, setListUser] = useState<any[]>([]);
-    const [listUserPass, setListUserPass] = useState<DetailUser[]>([]);
-    const [listSearchRole, setListSearchRole] = useState<any[]>([])
+  const dispatch = useDispatch();
+  const filter: FilterTable = useSelector((state: any) => state?.filterPages);
+  const [listUser, setListUser] = useState<any[]>([]);
+  const [listUserPass, setListUserPass] = useState<DetailUser[]>([]);
 
-    useEffect(() => {
-        getListUser().then((res: any) => {
-            if (res) {
-                setListUser(res.data)
-                setListUserPass(res.data)
-            } else {
-            }
-        })
-    }, [])
-
-    const onChangeQuery = (event: any) => {
-        const val = event.target.value.trim().toLocaleUpperCase()
-        dispatch(setQueryFilterPages(val))
-    }
-
-    const handleSearch = () => {
-        let temp: DetailUser[] = []
-        listUser.forEach((item: any) => {
-            for (const itemKey in item) {
-                if (typeof item[itemKey] === 'string') {
-                    if (item[itemKey].toLocaleUpperCase().includes(filter.query)) {
-                        temp.push(item)
-                        break;
-                    }
-                }
-            }
-        })
-        if (temp.length > 1) {
-            handleSort(temp)
+  const handleGetListUser = () => {
+    getListUser()
+      .then((res: any) => {
+        if (res.data.length > 0) {
+          let temp = handleSearch(res.data);
+          let totalPages = Math.ceil(temp.length / filter.numberPerPage);
+          dispatch(setTotalFilterPages(totalPages));
+          if (totalPages < filter.currentPage) {
+            dispatch(setCurrentFilterPages(1));
+          }
+          if (temp.length <= 1) {
+            dispatch(setSortFilterPages("none"));
+          }
+          temp = temp.slice(
+            (filter.currentPage - 1) * filter.numberPerPage,
+            filter.numberPerPage * filter.currentPage
+          );
+          return temp;
         }
-        setListUserPass(temp);
-    }
+        return [];
+      })
+      .then((res: DetailUser[]) => {
+        setListUser(res);
+        setListUserPass(res);
+      });
+  };
 
-    const ListUser = (props: IMyProps) => {
-        let {data} = {...props}
-        const CheckButton = (role: string, key: any) => {
-            switch (role) {
-                case "admin":
-                    return <Button variant="danger" key={key}>{role}</Button>
-                case "staff":
-                    return <Button variant="success" key={key}>{role}</Button>
-                case "manager":
-                    return <Button variant="warning" key={key}>{role}</Button>
-                default:
-                    return;
-            }
+  const onChangeQuery = (event: any) => {
+    const val = event.target.value.trim().toLocaleUpperCase();
+    dispatch(setQueryFilterPages(val));
+  };
+
+  const handleSearch = (data?: DetailUser[]): DetailUser[] => {
+    let temp: DetailUser[] = [];
+    let dataFilter = data ? data : listUser;
+    dataFilter.forEach((item: any) => {
+      for (const itemKey in item) {
+        if (typeof item[itemKey] === "string") {
+          if (item[itemKey].toLocaleUpperCase().includes(filter.query)) {
+            temp.push(item);
+            break;
+          }
         }
-
-        const handleRedirectDetail = (id: number) => {
-            navigate("/" + ROUTE_PATH.detail + `/${id}`)
-        }
-
-
-        return (
-            <div className='container-table'>
-                <Table striped bordered hover>
-                    <thead>
-                    <tr className='header-table-list'>
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>User name</th>
-                        <th>Email</th>
-                        <th>Address</th>
-                        <th>Phone</th>
-                        <th>Website</th>
-                        <th>Company</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {
-                        data?.map((user: any, key: any) => {
-                            return (
-                                <tr key={key} className='list-user-name'>
-                                    <td>{user.id}</td>
-                                    <td className='col-user-name' onClick={() => {
-                                        handleRedirectDetail(user.id)
-                                    }}>{user.name}</td>
-                                    <td>{user.username}</td>
-                                    <td>{user.email}</td>
-                                    <td>
-                                        <p>street: {user.address?.street}</p>
-                                        <p>suite: {user.address?.suite}</p>
-                                        <p>city: {user.address?.city}</p>
-                                        <p>zipcode: {user.address?.zipcode}</p>
-                                    </td>
-                                    <td>{user.phone}</td>
-                                    <td>{user.website}</td>
-                                    <td>{user.company?.name}</td>
-                                </tr>
-                            )
-                        })
-                    }
-                    </tbody>
-                </Table>
-            </div>
-
-        )
+      }
+    });
+    if (temp.length > 1) {
+      handleSort(temp);
     }
+    !data && setListUserPass(temp);
+    return temp;
+  };
 
-    const handleSort = (data: DetailUser[]) => {
-        switch (filter.sort) {
-            case 'none':
-                break
-            case 'asc':
-                data.sort((a: DetailUser, b: DetailUser) => {
-                    if (a.name > b.name) {
-                        return 1
-                    } else {
-                        return -1
-                    }
-                })
-                break
-            case 'desc':
-                data.sort((a: DetailUser, b: DetailUser) => {
-                    if (a.name < b.name) {
-                        return 1
-                    } else {
-                        return -1
-                    }
-                })
-                break
-            default:
-                break
-        }
+  const handleSort = (data: DetailUser[]) => {
+    switch (filter.sort) {
+      case "none":
+        break;
+      case "asc":
+        data.sort((a: DetailUser, b: DetailUser) => {
+          if (a.name > b.name) {
+            return 1;
+          } else {
+            return -1;
+          }
+        });
+        break;
+      case "desc":
+        data.sort((a: DetailUser, b: DetailUser) => {
+          if (a.name < b.name) {
+            return 1;
+          } else {
+            return -1;
+          }
+        });
+        break;
+      default:
+        break;
     }
+  };
 
-    const onChangeSelectSort = (event: any) => {
-        const val = event.target.value.trim()
-        dispatch(setSortFilterPages(val))
+  const onChangeSelectSort = (event: any) => {
+    const val = event.target.value.trim();
+    dispatch(setSortFilterPages(val));
+  };
+  const onChangeNumberPerPage = (event: any) => {
+    const val = parseInt(event.target.value);
+    dispatch(setNumberPerPageslFilterPages(val));
+  };
+
+  useEffect(() => {
+    handleGetListUser();
+  }, [filter]);
+
+  const handleChoicePage = (option: string, page?: number) => {
+    switch (option) {
+      case "choice":
+        dispatch(setCurrentFilterPages(page));
+        break;
+      case "prev":
+        dispatch(setCurrentFilterPages(filter.currentPage - 1));
+        break;
+      case "next":
+        dispatch(setCurrentFilterPages(filter.currentPage + 1));
+        break;
+      case "first":
+        dispatch(setCurrentFilterPages(1));
+        break;
+      case "last":
+        dispatch(setCurrentFilterPages(filter.totalPages));
+        break;
+      default:
+        break;
     }
+  };
 
-    useEffect(() => {
-        handleSearch()
-    }, [filter])
-
-    return (
-        <div className='pt-3'>
-            <div className='w-100 pb-3 d-flex justify-content-between'>
-                <Form.Control
-                    className='w-50'
-                    type="text"
-                    placeholder='Search somethings...'
-                    onChange={onChangeQuery}
-                />
-                <Form.Select aria-label="Default select example" className='w-25' onChange={onChangeSelectSort}
-                             value={filter.sort}>
-                    <option value="none">Sorting</option>
-                    <option value="asc">Asc</option>
-                    <option value="desc">Desc</option>
-                </Form.Select>
-            </div>
-            <ListUser data={listUserPass}/>
+  return (
+    <div className="pt-3 w-100 ps-3 pe-3">
+      <div className="w-100 pb-3 d-flex justify-content-end container-sorting">
+        <Form.Control
+          className="input-search-list"
+          type="text"
+          placeholder="Search somethings..."
+          onChange={onChangeQuery}
+        />
+        <div className="d-flex container-select-sort" style={{ gap: "15px" }}>
+          <label
+            className="d-flex align-items-center"
+            style={{ fontWeight: "bold" }}
+          >
+            Order by
+          </label>
+          <Form.Select
+            aria-label="Default select example"
+            className="select-sort-list"
+            onChange={onChangeSelectSort}
+            value={filter.sort}
+          >
+            <option value="none" disabled={listUserPass.length <= 1}>
+              Sorting by name
+            </option>
+            <option value="asc" disabled={listUserPass.length <= 1}>
+              Asc
+            </option>
+            <option value="desc" disabled={listUserPass.length <= 1}>
+              Desc
+            </option>
+          </Form.Select>
         </div>
-    )
-}
+      </div>
+      <ListUser data={listUserPass} />
+      <div className="d-flex justify-content-end pt-3" style={{ gap: "12px" }}>
+        <Form.Select
+          size="sm"
+          aria-label="Default select example"
+          onChange={onChangeNumberPerPage}
+          value={filter.numberPerPage}
+          style={{ height: "38px", width: "65px" }}
+        >
+          <option value={1}>1</option>
+          <option value={3}>3</option>
+          <option value={5}>5</option>
+          <option value={7}>7</option>
+          <option value={10}>10</option>
+        </Form.Select>
 
-export default ListComponent
+        <Pagination>
+          {/* <Pagination.First
+            disabled={filter.currentPage === 1}
+            onClick={() => handleChoicePage("first")}
+          /> */}
+          <Pagination.Prev
+            disabled={filter.currentPage === 1}
+            onClick={() => handleChoicePage("prev")}
+          />
+
+          <Pagination.Item
+            active={filter.currentPage === 1}
+            onClick={() => handleChoicePage("choice", 1)}
+          >
+            1
+          </Pagination.Item>
+
+          {filter.totalPages > 4 && (
+            <>
+              {(filter.currentPage > 2 || filter.currentPage === 1) && (
+                <Pagination.Ellipsis disabled />
+              )}
+              <Pagination.Item
+                active={
+                  filter.currentPage !== 1 &&
+                  filter.currentPage !== filter.totalPages
+                }
+                onClick={() =>
+                  handleChoicePage("choice", Math.round(filter.totalPages / 2))
+                }
+              >
+                {filter.currentPage !== 1 &&
+                filter.currentPage !== filter.totalPages
+                  ? filter.currentPage
+                  : Math.round(filter.totalPages / 2)}
+              </Pagination.Item>
+              {(filter.currentPage < filter.totalPages - 1 ||
+                filter.currentPage === filter.totalPages) && (
+                <Pagination.Ellipsis disabled />
+              )}
+            </>
+          )}
+
+          {filter.totalPages > 1 && (
+            <Pagination.Item
+              active={filter.currentPage === filter.totalPages}
+              onClick={() => handleChoicePage("choice", filter.totalPages)}
+            >
+              {filter.totalPages}
+            </Pagination.Item>
+          )}
+
+          <Pagination.Next
+            disabled={filter.currentPage === filter.totalPages}
+            onClick={() => handleChoicePage("next")}
+          />
+          {/* <Pagination.Last
+            disabled={filter.currentPage === filter.totalPages}
+            onClick={() => handleChoicePage("last")}
+          /> */}
+        </Pagination>
+      </div>
+    </div>
+  );
+};
+
+export default ListComponent;

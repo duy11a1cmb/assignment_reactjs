@@ -1,6 +1,6 @@
 import * as http from "http";
 import {USER} from "../constants/mockData/userData.mock";
-import {DetailUser} from "../models/userModel";
+import {DetailUser, FilterTable} from "../models/userModel";
 import {URLS} from "../constants/urls";
 import baseAPI from "./baseAPI";
 
