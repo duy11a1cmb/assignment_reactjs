@@ -1,22 +1,13 @@
 import * as http from "http";
 import {USER} from "../constants/mockData/userData.mock";
-import {DetailUser} from "../constants/modal";
+import {DetailUser} from "../models/userModel";
+import {URLS} from "../constants/urls";
+import baseAPI from "./baseAPI";
 
-const getListUser = () => {
-    return new Promise((resolve, reject) => {
-        resolve(USER)
-    })
+const getListUser = async () => {
+    return await baseAPI.get('users')
 }
-
-const getDetailUserById = (id:number|string): Promise<DetailUser | undefined > =>{
-    const detailUser:DetailUser | undefined = USER.find((user:any)=>user.id.toString() === id.toString());
-    return new Promise((resolve, reject) => {
-        if(detailUser){
-            resolve(detailUser)
-        }else{
-            reject()
-        }
-    })
+const getDetailUserById = async (id:number) =>{
+    return await baseAPI.get(`users/${id}`)
 }
-
-export const userServices = {getListUser,getDetailUserById}
+export {getListUser,getDetailUserById}

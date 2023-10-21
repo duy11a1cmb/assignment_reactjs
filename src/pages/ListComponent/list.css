@@ -8,6 +8,10 @@
 
 .header-table-list {
     position: sticky;
-    top: 56px;
+    top: -1px;
     z-index: 99;
+}
+.container-table{
+    height: calc(100vh - 500px);
+    overflow: auto;
 }

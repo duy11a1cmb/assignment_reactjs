@@ -6,6 +6,7 @@ import {AUTHENTICATE, ROUTE_PATH} from "../../constants/appConstants";
 import {useAuth} from "../../hooks/useAuth";
 import {useDispatch, useSelector} from "react-redux";
 import {setDetailUser} from "../../redux/slices/userSlices";
+import {Link} from "react-router-dom";
 
 const Header = () => {
     const dispatch = useDispatch()
@@ -43,7 +44,7 @@ const Header = () => {
                 </Navbar.Collapse>
                 <Navbar.Text>
                     <NavDropdown title={auth.username} id="basic-nav-dropdown">
-                        <NavDropdown.Item href="#action/3.1">Profile</NavDropdown.Item>
+                        <NavDropdown.Item href={`detail/${auth.id}`}>Profile</NavDropdown.Item>
                         <NavDropdown.Divider/>
                         <NavDropdown.Item href="/login" onClick={handleLogout}>
                             Logout

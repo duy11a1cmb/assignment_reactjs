@@ -4,11 +4,15 @@ export interface DetailUser {
     "username": string,
     "email": string,
     "password": string,
-    "roles": string[],
     "address": any,
     "phone": string,
     "website": string,
     "company": any,
-    skills: any[],
-    abouts:string
+}
+
+export interface FilterTable {
+    query: string,
+    sort: string,
+    currentPage: number,
+    totalPage: number
 }

@@ -1,24 +1,24 @@
 import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
-import {userServices} from "../../services/userServices";
 import './detail.css';
 import Image from 'react-bootstrap/Image';
-import {DetailUser} from "../../constants/modal";
 import ListGroup from 'react-bootstrap/ListGroup';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import Layout from "../../components/layout/Layout";
+import {DetailUser} from "../../models/userModel";
+import {getDetailUserById} from "../../services/userServices";
 
 const DetailComponent = () => {
     let {id} = useParams();
 
     const [detailUser, setDetailUser] = useState<DetailUser | undefined>();
 
-    useEffect(() => {
-        userServices.getDetailUserById(id || '').then((res: DetailUser | undefined) => {
-                setDetailUser(res)
-            }
-        )
-    }, [])
+    // useEffect(() => {
+    //     getDetailUserById(parseInt(id)).then((res: DetailUser) => {
+    //             setDetailUser(res)
+    //         }
+    //     )
+    // }, [])
     return (
         <Layout>
             <div className='w-100 row pt-3' style={{height:'calc(100vh - 80px)'}}>
@@ -36,16 +36,16 @@ const DetailComponent = () => {
                     </div>
                     <div style={{height: '65%'}} className='bg-box-detail'>
                         <h3>Personal skills </h3>
-                        {detailUser?.skills.map((skill: any,key:number) => {
-                            return (
-                                <ListGroup horizontal className="my-2 custom-list-group" key={key}>
-                                    <ListGroup.Item style={{width: '35%'}}>{skill?.name}</ListGroup.Item>
-                                    <ListGroup.Item style={{width: '60%'}}>
-                                        <ProgressBar variant="success" now={skill?.level} className='w-100'/>
-                                    </ListGroup.Item>
-                                </ListGroup>
-                            )
-                        })}
+                        {/*{detailUser?.skills.map((skill: any,key:number) => {*/}
+                        {/*    return (*/}
+                        {/*        <ListGroup horizontal className="my-2 custom-list-group" key={key}>*/}
+                        {/*            <ListGroup.Item style={{width: '35%'}}>{skill?.name}</ListGroup.Item>*/}
+                        {/*            <ListGroup.Item style={{width: '60%'}}>*/}
+                        {/*                <ProgressBar variant="success" now={skill?.level} className='w-100'/>*/}
+                        {/*            </ListGroup.Item>*/}
+                        {/*        </ListGroup>*/}
+                        {/*    )*/}
+                        {/*})}*/}
                     </div>
                 </div>
                 <div className='col-7 flex-column d-flex' style={{gap: '26px'}}>
@@ -72,7 +72,7 @@ const DetailComponent = () => {
                         </ListGroup>
                     </div>
                     <div style={{height: '45%'}} className='bg-box-detail bg-box-detail-abouts p-3'>
-                        {detailUser?.abouts}
+                        {/*{detailUser?.abouts}*/}
                     </div>
                 </div>
             </div >

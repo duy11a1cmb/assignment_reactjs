@@ -1,34 +1,33 @@
 import React, {useEffect, useState} from "react";
-import {userServices} from "../../services/userServices";
+import {getListUser} from "../../services/userServices";
 import Table from 'react-bootstrap/Table';
 import './list.css'
 import Button from 'react-bootstrap/Button';
 import {useNavigate} from "react-router-dom";
 import {ROUTE_PATH} from "../../constants/appConstants";
 import Form from 'react-bootstrap/Form';
+import {DetailUser, FilterTable} from "../../models/userModel";
+import {useDispatch, useSelector} from "react-redux";
+import {setQueryFilterPages, setSortFilterPages} from "../../redux/slices/filterSlices";
 
-interface Filter {
-    query: string,
-    role: string
+
+interface IMyProps {
+    data: DetailUser[]
 }
 
 const ListComponent = () => {
+    const dispatch = useDispatch()
     const navigate = useNavigate()
+    const filter: FilterTable = useSelector((state: any) => state?.filterPages)
     const [listUser, setListUser] = useState<any[]>([]);
-    const [listUserPass, setListUserPass] = useState<any[]>([]);
-    const [listSearchQuery, setListSearchQuery] = useState<any[]>([])
+    const [listUserPass, setListUserPass] = useState<DetailUser[]>([]);
     const [listSearchRole, setListSearchRole] = useState<any[]>([])
-    const [filter, setFilter] = useState<Filter>({
-        query: '',
-        role: ''
-    })
 
     useEffect(() => {
-        userServices.getListUser().then((res: any) => {
+        getListUser().then((res: any) => {
             if (res) {
-                setListUser(res)
-                setListSearchQuery(res)
-
+                setListUser(res.data)
+                setListUserPass(res.data)
             } else {
             }
         })
@@ -36,58 +35,29 @@ const ListComponent = () => {
 
     const onChangeQuery = (event: any) => {
         const val = event.target.value.trim().toLocaleUpperCase()
-        setFilter({...filter, query: val})
-        handleSearch(val)
-
+        dispatch(setQueryFilterPages(val))
     }
 
-    const handleSearch = (val:string) => {
-        setListSearchQuery([])
-        if (val.trim() === '') {
-            setListSearchQuery(listUser)
-        } else {
-            listUser.forEach((item: any, index) => {
-                for (const itemKey in item) {
-                    if (typeof item[itemKey] === 'string' && itemKey !== 'password' && itemKey !== 'abouts') {
-                        if (item[itemKey].toLocaleUpperCase().includes(val)) {
-                            setListSearchQuery((prev: any) => ([...prev, item]));
-                            break;
-                        }
+    const handleSearch = () => {
+        let temp: DetailUser[] = []
+        listUser.forEach((item: any) => {
+            for (const itemKey in item) {
+                if (typeof item[itemKey] === 'string') {
+                    if (item[itemKey].toLocaleUpperCase().includes(filter.query)) {
+                        temp.push(item)
+                        break;
                     }
-
                 }
-            })
+            }
+        })
+        if (temp.length > 1) {
+            handleSort(temp)
         }
+        setListUserPass(temp);
     }
 
-
-    const handleSelectRole = (val:string) => {
-        setListSearchRole([])
-
-        // listUser.forEach((item: any) => {
-        //     if (item.roles.includes(filter.role)) {
-        //         setListSearchRole((prev: any) => ([...prev, item]));
-        //     }
-        // })
-    }
-
-    const compareValSearch = () => {
-        setListUserPass([])
-        const isSameUser = (a: any, b: any) => a.id === b.id && a.id === b.id;
-        const onlyInLeft = (left: any[], right: any[], compareFunction: any) =>
-            left.filter(leftValue =>
-                right.some(rightValue =>
-                    compareFunction(leftValue, rightValue)));
-        const onlyInA = onlyInLeft(listSearchQuery, listSearchRole, isSameUser);
-        const onlyInB = onlyInLeft(listSearchRole, listSearchQuery, isSameUser);
-
-        const result = [...onlyInA, ...onlyInB];
-        setListUserPass(result)
-    }
-
-
-    const ListUser = (data: any) => {
-
+    const ListUser = (props: IMyProps) => {
+        let {data} = {...props}
         const CheckButton = (role: string, key: any) => {
             switch (role) {
                 case "admin":
@@ -107,67 +77,85 @@ const ListComponent = () => {
 
 
         return (
-            <Table striped bordered hover>
-                <thead>
-                <tr className='header-table-list'>
-                    <th>#</th>
-                    <th>Name</th>
-                    <th>User name</th>
-                    <th>Email</th>
-                    <th>roles</th>
-                    <th>Address</th>
-                    <th>Phone</th>
-                    <th>Website</th>
-                    <th>Company</th>
-                </tr>
-                </thead>
-                <tbody>
-                {
-                    data?.data.map((user: any, key: any) => {
-                        return (
-                            <tr key={key} onClick={() => {
-                                handleRedirectDetail(user.id)
-                            }} className='list-user-name'>
-                                <td>{user.id}</td>
-                                <td className='col-user-name'>{user.name}</td>
-                                <td>{user.username}</td>
-                                <td>{user.email}</td>
-                                <td>
-                                    <div className='d-flex flex-wrap' style={{gap: '12px'}}>
-                                        {user.roles?.map((role: string, key: any) => {
-                                            return CheckButton(role, key)
-                                        })}
-                                    </div>
-                                </td>
-                                <td>
-                                    <p>street: {user.address?.street}</p>
-                                    <p>suite: {user.address?.suite}</p>
-                                    <p>city: {user.address?.city}</p>
-                                    <p>zipcode: {user.address?.zipcode}</p>
-                                </td>
-                                <td>{user.phone}</td>
-                                <td>{user.website}</td>
-                                <td>{user.company?.name}</td>
-                            </tr>
-                        )
-                    })
-                }
+            <div className='container-table'>
+                <Table striped bordered hover>
+                    <thead>
+                    <tr className='header-table-list'>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>User name</th>
+                        <th>Email</th>
+                        <th>Address</th>
+                        <th>Phone</th>
+                        <th>Website</th>
+                        <th>Company</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {
+                        data?.map((user: any, key: any) => {
+                            return (
+                                <tr key={key} className='list-user-name'>
+                                    <td>{user.id}</td>
+                                    <td className='col-user-name' onClick={() => {
+                                        handleRedirectDetail(user.id)
+                                    }}>{user.name}</td>
+                                    <td>{user.username}</td>
+                                    <td>{user.email}</td>
+                                    <td>
+                                        <p>street: {user.address?.street}</p>
+                                        <p>suite: {user.address?.suite}</p>
+                                        <p>city: {user.address?.city}</p>
+                                        <p>zipcode: {user.address?.zipcode}</p>
+                                    </td>
+                                    <td>{user.phone}</td>
+                                    <td>{user.website}</td>
+                                    <td>{user.company?.name}</td>
+                                </tr>
+                            )
+                        })
+                    }
+                    </tbody>
+                </Table>
+            </div>
 
-                </tbody>
-            </Table>
         )
     }
 
-    const onChangeSelectRoles = (event: any) => {
-        setFilter({...filter, role: event.target.value})
-        handleSelectRole(event.target.value)
+    const handleSort = (data: DetailUser[]) => {
+        switch (filter.sort) {
+            case 'none':
+                break
+            case 'asc':
+                data.sort((a: DetailUser, b: DetailUser) => {
+                    if (a.name > b.name) {
+                        return 1
+                    } else {
+                        return -1
+                    }
+                })
+                break
+            case 'desc':
+                data.sort((a: DetailUser, b: DetailUser) => {
+                    if (a.name < b.name) {
+                        return 1
+                    } else {
+                        return -1
+                    }
+                })
+                break
+            default:
+                break
+        }
+    }
+
+    const onChangeSelectSort = (event: any) => {
+        const val = event.target.value.trim()
+        dispatch(setSortFilterPages(val))
     }
 
     useEffect(() => {
-        handleSelectRole(filter.role)
-        handleSearch(filter.query)
-        compareValSearch()
-
+        handleSearch()
     }, [filter])
 
     return (
@@ -176,18 +164,17 @@ const ListComponent = () => {
                 <Form.Control
                     className='w-50'
                     type="text"
-                    placeholder='Search somethings without roles...'
+                    placeholder='Search somethings...'
                     onChange={onChangeQuery}
                 />
-                <Form.Select aria-label="Default select example" className='w-25' onChange={onChangeSelectRoles}
-                             value={filter.role}>
-                    <option value="all">All Roles</option>
-                    <option value="admin">Admin</option>
-                    <option value="manager">Manager</option>
-                    <option value="staff">Staff</option>
+                <Form.Select aria-label="Default select example" className='w-25' onChange={onChangeSelectSort}
+                             value={filter.sort}>
+                    <option value="none">Sorting</option>
+                    <option value="asc">Asc</option>
+                    <option value="desc">Desc</option>
                 </Form.Select>
             </div>
-            <ListUser data={listSearchQuery}/>
+            <ListUser data={listUserPass}/>
         </div>
     )
 }
