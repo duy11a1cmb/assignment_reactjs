@@ -38,7 +38,7 @@ const Header = () => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Text>
           <NavDropdown title={auth.username} id="basic-nav-dropdown">
-            <NavDropdown.Item href={`detail/${auth.id}`}>
+            <NavDropdown.Item href={`/detail/${auth.id}`}>
               Profile
             </NavDropdown.Item>
             <NavDropdown.Divider />

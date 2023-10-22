@@ -5,13 +5,15 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import AppRouters from "./router/AppRouter";
 import {Provider} from "react-redux";
 import store from "./redux/store";
+
 function App() {
     return (
-        <BrowserRouter>
-            <Provider store={store}>
+        <Provider store={store}>
+            <BrowserRouter>
                 <AppRouters/>
-            </Provider>
-        </BrowserRouter>
+            </BrowserRouter>
+        </Provider>
+
     );
 }
 
