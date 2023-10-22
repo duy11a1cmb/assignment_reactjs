@@ -6,10 +6,12 @@ import {getDetailUserById} from "../../services/userServices";
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
+import {useNavigate} from "react-router-dom";
+import {ROUTE_PATH} from "../../constants/appConstants";
 
 const DetailComponent = () => {
     let {id} = useParams();
-
+    const navigate = useNavigate();
     const [detailUser, setDetailUser] = useState<DetailUser | undefined>();
 
     useEffect(() => {
@@ -19,12 +21,11 @@ const DetailComponent = () => {
                 }
             )
         }
-
     }, [])
 
     return (
         <div className='w-100 pt-3 ps-3 pe-3' style={{height: 'calc(100vh - 116px)'}}>
-            <div><Button variant="primary">Back</Button></div>
+            <div><Button variant="primary" onClick={()=>{navigate("/" + ROUTE_PATH.home)}}>Back</Button></div>
             <div className='d-flex align-items-center justify-content-center w-100 h-100'>
                 <div className="flip-card" tabIndex={0}>
                     <div className="flip-card-inner" style={{borderRadius: '0.375rem'}}>
