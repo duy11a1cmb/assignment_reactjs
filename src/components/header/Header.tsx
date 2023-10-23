@@ -7,7 +7,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { useDispatch, useSelector } from "react-redux";
 import { setDetailUser } from "../../redux/slices/userSlices";
 import { Link } from "react-router-dom";
-
+import './header.css'
 const Header = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.userSlices.user);
@@ -36,7 +36,7 @@ const Header = () => {
           <span className="ps-2">HRM</span>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Text>
+        <Navbar.Text className='text-header-profile'>
           <NavDropdown title={auth.username} id="basic-nav-dropdown">
             <NavDropdown.Item href={`/detail/${auth.id}`}>
               Profile
