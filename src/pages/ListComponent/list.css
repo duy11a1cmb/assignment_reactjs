@@ -36,9 +36,10 @@
   }
   .container-select-sort {
     width: 100%;
+    justify-content: flex-end;
   }
   .select-sort-list {
-    width: calc(100% - 82px);
+    width: calc(100% - 100px);
   }
   .input-search-list {
     width: 100%;

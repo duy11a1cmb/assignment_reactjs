@@ -26,11 +26,11 @@ const DetailComponent = () => {
     return (
         <div className='w-100 pt-3 ps-3 pe-3' style={{height: 'calc(100vh - 116px)'}}>
             <div><Button variant="primary" onClick={()=>{navigate("/" + ROUTE_PATH.home)}}>Back</Button></div>
-            <div className='d-flex align-items-center justify-content-center w-100 h-100'>
+            <div className='d-flex align-items-center justify-content-center w-100 h-100' style={{paddingBottom:'40px'}}>
                 <div className="flip-card" tabIndex={0}>
                     <div className="flip-card-inner" style={{borderRadius: '0.375rem'}}>
                         <Card style={{width: '18rem'}} className="flip-card-front">
-                            <Card.Img variant="top"
+                            <Card.Img variant="top" style={{maxHeight:'calc(100% - 70px)',padding:'10px'}}
                                       src="https://i.bloganchoi.com/bloganchoi.com/wp-content/uploads/2022/10/tran-phi-vu.jpg?fit=690%2C20000&quality=95&ssl=1"/>
                             <Card.Body>
                                 <Card.Title style={{color: '#ffffff'}}>{detailUser?.name}</Card.Title>
@@ -39,7 +39,7 @@ const DetailComponent = () => {
                                 </Card.Text>
                             </Card.Body>
                         </Card>
-                        <Card style={{width: '18rem'}} className="flip-card-back">
+                        <Card style={{width: '18rem',overflow:'auto'}} className="flip-card-back">
                             <ListGroup variant="flush" className='w-100'>
                                 <ListGroup.Item className='d-flex'><strong>Name: {'\u00A0'}</strong>{detailUser?.name}
                                 </ListGroup.Item>

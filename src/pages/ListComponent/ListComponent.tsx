@@ -142,6 +142,7 @@ const ListComponent = () => {
                     className="input-search-list"
                     type="text"
                     placeholder="Search somethings..."
+                    value={filter.query}
                     onChange={onChangeQuery}
                 />
                 <div className="d-flex container-select-sort" style={{gap: "15px"}}>
